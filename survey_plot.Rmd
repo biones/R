@@ -1,0 +1,87 @@
+---
+title: "アンケート集計"
+output:
+  html_document:
+    df_print: paged
+  pdf_document:
+    latex_engine: xelatex 
+    toc: true
+  html_notebook: default
+---
+  
+   
+
+　  
+　 
+```{r echo=F,include=FALSE}
+ 
+library(ggplot2)
+library(tidyverse)
+
+filename=""
+names(df)
+
+ngcol=c(1,15,16,17,18)
+
+df=df[,-ngcol]
+
+#order=c(9,1,2,3,6,4,5,11,7,8,13,12)
+#df=df[,order]
+
+```
+
+```{r echo=F,error=F,warning=F,comment="",message=FALSE,results='asis'}
+theme_set(theme_bw(base_family="HiraKakuProN-W3"))
+for(i in 2:ncol(df)){
+
+  name=colnames(df)[i]
+  tmp=df[,i]
+  cat(paste("# Q",i," ",name,"\n\n",sep = ""))
+  #print(ptmp)
+  #print(knitr::kable(ptmp, "markdown"))
+  
+  gdf=data.frame(c(tmp))
+  colnames(gdf)="x"
+  
+  f=function(x){is.numeric(x ) && !is.na(x)}
+  tmp=unlist(lapply(as.numeric(unlist(df[,i])),FUN=f))
+  d=as.numeric(unlist(df[tmp,i]))
+
+  tbl=table(tmp)
+  
+  if(names(tbl[1])=="FALSE"){
+    perc_numeric=1-(tbl["FALSE"]/(sum(tbl)))
+  }else{
+    perc_numeric=(tbl["TRUE"]/(sum(tbl)))
+  }
+  g=NULL
+  ac=table(df[,i])
+  ac=sort(ac,decreasing = T)
+  
+  if(perc_numeric>=0.4){
+    gdf=as.data.frame(unlist(lapply(df[,i],as.numeric)))
+    names(gdf)[1]="x"
+    g=ggplot(gdf)+geom_histogram(aes(x=x))
+    cat("\n\n median ",paste(round(median(d),1),"\n\n"))
+
+  }else if(max(ac)>1){
+    #print("notint")
+    gdf=as.data.frame(ac)
+    g=ggplot(gdf,aes(x=Var1,y=Freq))+geom_bar(stat="identity")
+  }else{
+    print(knitr::kable(ac,"markdown"))
+    cat('\n\n')
+    next
+  }
+  try(print(g))
+  cat('\n\n')
+}
+
+```
+
+
+
+
+
+
+
