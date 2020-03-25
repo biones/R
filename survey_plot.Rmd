@@ -19,6 +19,8 @@ library(ggplot2)
 library(tidyverse)
 
 filename=""
+df=read_csv(filename)
+
 names(df)
 
 ngcol=c(1,15,16,17,18)
